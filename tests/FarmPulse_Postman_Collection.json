@@ -1,0 +1,456 @@
+{
+  "info": {
+    "name": "FarmPulse AI API",
+    "description": "Complete API collection for FarmPulse AI platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Signup - Farmer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"testfarmer@example.com\",\n  \"password\": \"password123\",\n  \"full_name\": \"Test Farmer\",\n  \"role\": \"farmer\",\n  \"phone\": \"+1234567890\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/signup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Login - Farmer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "pm.collectionVariables.set(\"token\", response.access_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"farmer@test.com\",\n  \"password\": \"farmer123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Create Report (Text Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "text_symptoms",
+                  "value": "My tomato plants have dark brown spots on the leaves with white fuzzy growth underneath. The leaves are turning yellow and falling off.",
+                  "type": "text"
+                },
+                {
+                  "key": "crop_type",
+                  "value": "tomato",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/reports/",
+              "host": ["{{base_url}}"],
+              "path": ["reports", ""]
+            }
+          }
+        },
+        {
+          "name": "Get All Reports",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/",
+              "host": ["{{base_url}}"],
+              "path": ["reports", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Report by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/:reportId",
+              "host": ["{{base_url}}"],
+              "path": ["reports", ":reportId"],
+              "variable": [
+                {
+                  "key": "reportId",
+                  "value": "REPLACE_WITH_REPORT_ID"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Report (Vet Only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"in_progress\",\n  \"vet_notes\": \"Examined the case. Symptoms indicate Late Blight.\",\n  \"diagnosis\": \"Late Blight\",\n  \"treatment\": \"Apply fungicide spray. Remove affected leaves. Improve air circulation.\",\n  \"final_disease_label\": \"Late Blight\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reports/:reportId",
+              "host": ["{{base_url}}"],
+              "path": ["reports", ":reportId"],
+              "variable": [
+                {
+                  "key": "reportId",
+                  "value": "REPLACE_WITH_REPORT_ID"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Analysis",
+      "item": [
+        {
+          "name": "Analyze Text",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/ai/analyze-text?text=Brown spots on leaves with white growth&crop_type=tomato",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "analyze-text"],
+              "query": [
+                {
+                  "key": "text",
+                  "value": "Brown spots on leaves with white growth"
+                },
+                {
+                  "key": "crop_type",
+                  "value": "tomato"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Similar Cases",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/ai/similar-cases/Late%20Blight?limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "similar-cases", "Late Blight"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/health",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "health"]
+            }
+          }
+        },
+        {
+          "name": "Get Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/analytics?days=30",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "analytics"],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "30"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users?limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Reports",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/export/reports?format=json&days=30",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "export", "reports"],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "json"
+                },
+                {
+                  "key": "days",
+                  "value": "30"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Geographic Heatmap",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/geo-heatmap?days=30",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "geo-heatmap"],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "30"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Signaling",
+      "item": [
+        {
+          "name": "Create Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"report_id\": \"REPLACE_WITH_REPORT_ID\",\n  \"farmer_id\": \"REPLACE_WITH_FARMER_ID\",\n  \"vet_id\": \"REPLACE_WITH_VET_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/signaling/session/create",
+              "host": ["{{base_url}}"],
+              "path": ["signaling", "session", "create"]
+            }
+          }
+        },
+        {
+          "name": "End Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "notes",
+                  "value": "Video consultation completed. Discussed treatment plan.",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/signaling/session/:sessionId/end",
+              "host": ["{{base_url}}"],
+              "path": ["signaling", "session", ":sessionId", "end"],
+              "variable": [
+                {
+                  "key": "sessionId",
+                  "value": "REPLACE_WITH_SESSION_ID"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
